@@ -438,18 +438,7 @@ export function main(input: CliOptions): number {
 	return 0;
 }
 
-// Direct execution support when bundled to dist/index.js
-const isDirectRun = (() => {
-	try {
-		const thisFile = new URL("", import.meta.url).href;
-		const entry = `file://${process.argv[1]}`;
-		return thisFile === entry || process.argv[1]?.endsWith("index.js");
-	} catch {
-		return false;
-	}
-})();
-
-if (isDirectRun) {
+if (import.meta.main) {
 	main({ argv: process.argv.slice(2) });
 }
 
