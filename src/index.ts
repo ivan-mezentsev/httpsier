@@ -69,7 +69,10 @@ function ensureUrl(u: string): URL {
 }
 
 function makeSlug(seed?: string): string {
-	if (seed && /^[a-z0-9-]{3,32}$/i.test(seed)) return seed.toLowerCase();
+	// Allow DNS-safe label: 1-63 chars, letters/digits/hyphens, no leading/trailing hyphen
+	const isValid = (s: string) =>
+		/^[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?$/i.test(s);
+	if (seed && isValid(seed)) return seed.toLowerCase();
 	const rand = randomBytes(6).toString("hex");
 	return rand;
 }
