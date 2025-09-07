@@ -1,6 +1,6 @@
 {
 	"name": "httpsier",
-	"version": "0.1.1",
+	"version": "0.1.2",
 	"description": "Tiny HTTP tunnel for local development using Cloudflare Workers. Proxies public traffic from a subdomain to your local server via WebSocket.",
 	"type": "module",
 	"main": "dist/index.js",
