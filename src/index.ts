@@ -4,7 +4,10 @@ import { Buffer } from "node:buffer";
 import { TextEncoder } from "node:util";
 import { ReadableStream } from "node:stream/web";
 import { WebSocket, type RawData } from "ws"; // bundled by esbuild
+import tls from "node:tls";
 import type { IncomingMessage, ClientRequest } from "node:http";
+
+let __httpsierEmitWarningPatched = false;
 
 type StrMap = Record<string, string>;
 
@@ -116,6 +119,46 @@ function dispatchToLocal(
 	},
 	send: (msg: unknown) => void
 ): DispatchHandle {
+	// Always disable TLS verification for local prefetch and suppress warnings
+	// This affects only the current Node process and is intended for local development.
+	try {
+		if (process.env.NODE_TLS_REJECT_UNAUTHORIZED !== "0")
+			process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
+		// Suppress only the specific warning about NODE_TLS_REJECT_UNAUTHORIZED
+		if (!__httpsierEmitWarningPatched) {
+			type EmitWarning = (
+				warning: string | Error,
+				name?: string,
+				ctor?: { (...args: unknown[]): unknown }
+			) => void;
+			const orig: EmitWarning = (
+				process.emitWarning as unknown as EmitWarning
+			).bind(process);
+			const wrapped: EmitWarning = (warning, name, ctor) => {
+				const msg =
+					typeof warning === "string"
+						? warning
+						: warning &&
+							  typeof warning === "object" &&
+							  "message" in warning
+							? String((warning as Error).message)
+							: String(warning);
+				if (/NODE_TLS_REJECT_UNAUTHORIZED/i.test(msg)) return;
+				orig(warning, name, ctor);
+			};
+			(process as unknown as { emitWarning: EmitWarning }).emitWarning =
+				wrapped;
+			__httpsierEmitWarningPatched = true;
+		}
+		// Ensure Node's TLS default also honors this even if env var is read earlier
+		const tlsCfg = tls as unknown as {
+			DEFAULT_REJECT_UNAUTHORIZED?: boolean;
+		};
+		tlsCfg.DEFAULT_REJECT_UNAUTHORIZED = false;
+	} catch {
+		// best-effort; ignore if not permitted in this runtime
+	}
+
 	const reqUrl = new URL(head.url, base);
 	const hdrs: StrMap = {};
 	for (const [k, v] of head.headers) hdrs[String(k)] = String(v);
