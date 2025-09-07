@@ -7,7 +7,7 @@
 Tiny, opinionated HTTP tunnel for local development, built on Cloudflare Workers + Durable Objects. The CLI opens a WebSocket to your Worker and proxies public HTTP traffic from a slug subdomain like `https://<slug>.<your-domain>` to your local server (for example, `http://localhost:8080`).
 
 - Worker uses a custom domain with wildcard subdomains (e.g. `*.example.com`) and routes traffic to a Durable Object that multiplexes requests over a single WS connection to your machine.
-- CLI is a single-file Node.js 18+ binary published to npm and runnable via npx.
+- CLI is a single-file Node.js 22+ binary published to npm and runnable via npx.
 - Safe defaults: strips service Authorization from proxied requests, sets X-Forwarded-* headers, basic concurrency limiting per isolate, and throttle windows for repeated unauthenticated hits.
 
 ## How it works (high level)
@@ -18,7 +18,7 @@ Tiny, opinionated HTTP tunnel for local development, built on Cloudflare Workers
 
 ## Requirements
 
-- Node.js 18 or newer on the client side (for the CLI).
+- Node.js 22 or newer on the client side (for the CLI).
 - A Cloudflare account with a zone using your custom domain (DNS managed by Cloudflare) to attach Worker routes.
 - You must own a domain whose DNS is managed by Cloudflare (active zone). Wildcard subdomains are supported by free plan.
 - Wrangler CLI installed and authenticated: <https://developers.cloudflare.com/workers/wrangler/>
@@ -131,7 +131,7 @@ Usage: npx httpsier --http http://localhost:8080 --api [token] --worker https://
 - Cloudflare Workers Runtime and Cache API (throttle windows).
 - Cloudflare Durable Objects (session registry, sticky WS per slug).
 - Wrangler (build/deploy/secrets).
-- Node.js 18+ (global fetch, WHATWG streams in the CLI).
+- Node.js 22+ (global fetch, WHATWG streams in the CLI).
 - WebSocket (ws) for the tunnel.
 - TypeScript + esbuild for a single-file ESM CLI bundle.
 - ESLint + Prettier for linting/formatting.
