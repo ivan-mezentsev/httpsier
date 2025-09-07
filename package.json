@@ -1,0 +1,61 @@
+{
+	"name": "httpsier",
+	"version": "0.1.0",
+	"description": "Tiny HTTP tunnel for local development using Cloudflare Workers. Proxies public traffic from a subdomain to your local server via WebSocket.",
+	"type": "module",
+	"main": "dist/index.js",
+	"types": "dist/index.d.ts",
+	"bin": {
+		"httpsier": "dist/index.js"
+	},
+	"engines": {
+		"node": ">=18"
+	},
+	"scripts": {
+		"build": "esbuild src/index.ts --bundle --platform=node --format=esm --external:ws --outfile=dist/index.js --banner:js='#!/usr/bin/env node' && npm run build:types",
+		"build:types": "tsc -p tsconfig.json --emitDeclarationOnly --declaration --declarationMap false --outDir dist",
+		"dev": "tsx src/index.ts",
+		"lint": "eslint . && tsc --noEmit",
+		"check": "eslint . && tsc --noEmit",
+		"typecheck": "tsc --noEmit",
+		"lint:fix": "eslint . --fix && npm run cs:fix",
+		"cs": "prettier --check .",
+		"cs:fix": "prettier --write .",
+		"format": "npm run lint:fix && npm run cs:fix",
+		"test": "npm run build && node --test worker/tests/**/*.test.js src/tests/**/*.test.js",
+		"test:watch": "npm run build && node --test --watch worker/tests/**/*.test.js src/tests/**/*.test.js"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/ivan-mezentsev/httpsier.git"
+	},
+	"keywords": [
+		"httpsier"
+	],
+	"author": "Ivan Mezentsev",
+	"license": "MIT",
+	"files": [
+		"dist/index.js",
+		"dist/index.d.ts",
+		"README.md",
+		"LICENSE"
+	],
+	"devDependencies": {
+		"@eslint/js": "^9.34.0",
+		"@types/node": "^20.0.0",
+		"@types/ws": "^8.5.10",
+		"@typescript-eslint/eslint-plugin": "^8.42.0",
+		"@typescript-eslint/parser": "^8.42.0",
+		"esbuild": "^0.25.9",
+		"eslint": "^9.15.0",
+		"eslint-config-prettier": "^10.1.1",
+		"eslint-plugin-prettier": "^5.2.1",
+		"prettier": "^3.3.3",
+		"tsx": "^4.19.2",
+		"typescript": "^5.5.0"
+	},
+	"dependencies": {
+		"tslib": "^2.6.2",
+		"ws": "^8.18.0"
+	}
+}

@@ -1,0 +1,28 @@
+name = "httpsier"
+main = "src/worker.js"
+compatibility_date = "2025-07-09"
+
+[vars]
+DELAY_SECONDS = 60
+CONCURRENT_SESSIONS_MAX = 10
+CUSTOM_DOMAIN = "example.com"
+# Secrets are managed via `wrangler secret put API_TOKEN`
+
+# Durable Objects binding for session registry
+[[durable_objects.bindings]]
+name = "SESSION_REGISTRY"
+class_name = "SessionRegistry"
+
+[[migrations]]
+tag = "v1"
+new_sqlite_classes = [ "SessionRegistry" ]
+
+[[routes]]
+pattern = "example.com"
+zone_name = "example.com"
+custom_domain = true
+
+# Enable the Worker on all subdomains like https://<session>.example.com/*
+[[routes]]
+pattern = "*.example.com/*"
+zone_name = "example.com"

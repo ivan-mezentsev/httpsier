@@ -1,0 +1,5 @@
+*.d.ts
+dist
+node_modules
+tsconfig.tsbuildinfo
+.env
